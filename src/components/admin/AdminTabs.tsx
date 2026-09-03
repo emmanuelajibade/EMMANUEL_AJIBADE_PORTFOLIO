@@ -11,6 +11,7 @@ export default function AdminTabs({ activeTab, onTabChange }: AdminTabsProps) {
     { id: "designs", label: "Designs" },
     { id: "writing", label: "Writing" },
     { id: "profile", label: "Profile" },
+    { id: "ai", label: "AI Knowledge" },   // Added
   ];
 
   return (

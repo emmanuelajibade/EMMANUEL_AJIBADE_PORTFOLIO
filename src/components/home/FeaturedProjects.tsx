@@ -26,7 +26,8 @@ export default function FeaturedProjects({ projects }: { projects: Project[] }) 
               Featured Projects
             </h2>
             <p className="mt-4 text-muted-foreground max-w-2xl">
-              A selection of work that highlights my technical skills and problem‑solving.
+              Software projects Emmanuel has built or is developing, from collaboration tools to
+              experiments in automation and web experiences.
             </p>
           </header>
         </Reveal>

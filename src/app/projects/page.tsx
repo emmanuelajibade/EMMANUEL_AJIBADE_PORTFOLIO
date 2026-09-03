@@ -33,7 +33,8 @@ export default async function ProjectsPage() {
                 Projects
               </h1>
               <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                A selection of software and technology work I&apos;ve built.
+                Software projects Emmanuel Ajibade has built or is developing, including web applications,
+                developer tools, and experiments with modern technologies.
               </p>
             </header>
           </Reveal>

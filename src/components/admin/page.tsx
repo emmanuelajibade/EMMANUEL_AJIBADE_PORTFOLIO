@@ -6,6 +6,7 @@ import ProjectsManager from "@/components/admin/ProjectsManager";
 import DesignsManager from "@/components/admin/DesignsManager";
 import WritingManager from "@/components/admin/WritingManager";
 import ProfileManager from "@/components/admin/ProfileManager";
+import AIKnowledgeManager from "@/components/admin/AIKnowledgeManager";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("projects");
@@ -15,6 +16,7 @@ export default function AdminDashboard() {
     designs: "Design Management",
     writing: "Writing Management",
     profile: "Profile Settings",
+    ai: "AI Knowledge",
   };
 
   return (
@@ -24,7 +26,7 @@ export default function AdminDashboard() {
         <AdminTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-blue-600">
+          <h2 className="text-xl font-semibold text-orange-600">
             {sectionTitle[activeTab]}
           </h2>
           <p className="text-sm text-slate-500 mt-1">
@@ -36,6 +38,7 @@ export default function AdminDashboard() {
         {activeTab === "designs" && <DesignsManager />}
         {activeTab === "writing" && <WritingManager />}
         {activeTab === "profile" && <ProfileManager />}
+        {activeTab === "ai" && <AIKnowledgeManager />}
       </div>
     </div>
   );

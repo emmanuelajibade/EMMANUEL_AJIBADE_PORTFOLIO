@@ -19,7 +19,8 @@ export default function DesignPreview({ designs }: { designs: DesignWork[] }) {
               Design Work
             </h2>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-              A selection of visual design that complements my engineering work.
+              Selected posters, branding, interface, social media, print, and motion work from
+              Emmanuel&apos;s design practice.
             </p>
           </header>
         </Reveal>

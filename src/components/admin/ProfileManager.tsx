@@ -213,7 +213,7 @@ export default function ProfileManager() {
           className="w-full rounded-md border border-slate-200 bg-white/60 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <p className="text-xs text-slate-500 mt-1">
-          Format: {`[{"platform":"GitHub","url":"https://github.com/example"}]`}
+          Format: {`[{"platform":"Facebook","url":"https://web.facebook.com/profile.php?id=61573178008542"},{"platform":"GitHub Pages","url":"https://emmanuelajibade.github.io"}]`}. LinkedIn is currently unavailable.
         </p>
       </div>
 

@@ -34,12 +34,14 @@ export default async function WritingPage() {
     "@type": "Blog",
     name: "Emmanuel Ajibade's Writing",
     url: `${siteUrl}/writing`,
+    author: { "@type": "Person", name: "Emmanuel Ajibade", url: siteUrl },
     blogPost: posts.map((post) => ({
       "@type": "BlogPosting",
       headline: post.title,
       description: post.summary,
       datePublished: post.date,
-      author: { "@type": "Person", name: post.author },
+      url: `${siteUrl}/writing/${post.slug}`,
+      author: { "@type": "Person", name: post.author, url: siteUrl },
     })),
   };
 
@@ -57,7 +59,8 @@ export default async function WritingPage() {
                 Writing
               </h1>
               <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                Articles, notes, and thoughts about development and design.
+                Emmanuel Ajibade&apos;s technical notes and working ideas about web development,
+                Next.js, design systems, and the relationship between design and implementation.
               </p>
             </header>
           </Reveal>

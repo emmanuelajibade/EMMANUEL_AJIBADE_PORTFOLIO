@@ -1,11 +1,12 @@
 import { Profile, Project, DesignWork, WritingPost } from "@/types/content";
+import { publicFacebookUrl, publicGithubUrl } from "./profile-identity";
 
 export const profile: Profile = {
   id: "main",
   name: "Emmanuel Ajibade",
   title: "Tech Specialist & Software Developer",
-  shortIntro: "Building robust software and crafting thoughtful visual experiences.",
-  bio: "A developer with a passion for design, creating digital products that are both functional and beautiful.",
+  shortIntro: "Building practical software and thoughtful visual experiences.",
+  bio: "A Tech Specialist & Software Developer working across software development, design, and practical digital products.",
   skills: ["TypeScript", "React", "Node.js", "UI Design", "Tailwind CSS", "Next.js"],
   interests: ["Open Source", "UI/UX", "Creative Coding"],
   profileImage: {
@@ -18,8 +19,8 @@ export const profile: Profile = {
   location: "Lagos, Nigeria",
   phone: "+234 9067502619",
   socialLinks: [
-    { platform: "GitHub", url: "https://github.com/example" },
-    { platform: "LinkedIn", url: "https://linkedin.com/in/example" },
+    { platform: "Facebook", url: publicFacebookUrl },
+    { platform: "GitHub Pages", url: publicGithubUrl },
   ],
   contactEmail: "aduremmanuel123@gmail.com",
 };
@@ -29,8 +30,8 @@ export const projects: Project[] = [
     id: "1",
     title: "Collabe",
     slug: "collabe",
-    shortDescription: "A collaboration platform for teams.",
-    description: "Collabe is a project that explores real-time collaboration tools.",
+    shortDescription: "A team collaboration platform with chat, task management, and file sharing.",
+    description: "Collabe is a collaboration platform designed to bring team communication, task management, and file sharing into one web application.",
     type: "Web App",
     role: "Full Stack Developer",
     technologies: ["Next.js", "Firebase", "Tailwind CSS"],
@@ -56,8 +57,8 @@ export const projects: Project[] = [
     id: "2",
     title: "Cloud Backup",
     slug: "cloud-backup",
-    shortDescription: "A backup tool for cloud storage.",
-    description: "Cloud Backup is an experimental project for managing file backups.",
+    shortDescription: "An in-progress command-line tool for managing cloud file backups.",
+    description: "Cloud Backup is an experimental command-line project for automating cloud file backups with encryption.",
     type: "CLI Tool",
     role: "Developer",
     technologies: ["Node.js", "TypeScript"],
@@ -83,8 +84,8 @@ export const projects: Project[] = [
     id: "3",
     title: "Portfolio Website",
     slug: "portfolio-website",
-    shortDescription: "This personal portfolio site.",
-    description: "The website you are looking at right now, built with Next.js.",
+    shortDescription: "A portfolio that brings Emmanuel Ajibade's software, design, and writing together.",
+    description: "This portfolio website presents Emmanuel Ajibade's software projects, visual design work, and technical writing in a responsive Next.js experience.",
     type: "Website",
     role: "Designer & Developer",
     technologies: ["Next.js", "React", "Tailwind CSS", "Motion"],

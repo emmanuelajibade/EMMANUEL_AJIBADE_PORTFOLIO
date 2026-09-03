@@ -103,9 +103,12 @@ export default async function WritingDetailPage({
     "@type": "BlogPosting",
     headline: post.title,
     description: post.summary,
+    url: `${siteUrl}/writing/${post.slug}`,
+    mainEntityOfPage: `${siteUrl}/writing/${post.slug}`,
     datePublished: post.date,
     dateModified: post.updatedAt || post.date,
-    author: { "@type": "Person", name: post.author },
+    author: { "@type": "Person", name: post.author, url: siteUrl },
+    publisher: { "@type": "Person", name: "Emmanuel Ajibade", url: siteUrl },
     image: post.coverImage?.url?.startsWith("http") ? post.coverImage.url : undefined,
   };
 
@@ -134,7 +137,7 @@ export default async function WritingDetailPage({
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mt-2">{post.title}</h1>
             <p className="mt-4 text-muted-foreground">{post.summary}</p>
             <div className="mt-6 flex items-center gap-4 text-sm text-muted-foreground">
-              <span>{post.author}</span>
+              <span>Written by {post.author}</span>
               <span>·</span>
               <time dateTime={post.date}>{new Date(post.date).toLocaleDateString()}</time>
               <span>·</span>

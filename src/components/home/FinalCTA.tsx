@@ -12,7 +12,8 @@ export default function FinalCTA() {
               Let&apos;s work together
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-slate-700">
-              I&apos;m always open to discussing new projects, collaborations, or ideas.
+              Have a project, technical question, or design idea to discuss? Get in touch with
+              Emmanuel to start the conversation.
             </p>
             <div className="mt-8">
               <Link

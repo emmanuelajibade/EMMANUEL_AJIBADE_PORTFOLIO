@@ -1,21 +1,27 @@
 import { getProfile } from "@/lib/data";
 import Container from "@/components/layout/Container";
 import Link from "next/link";
-import Image from "next/image";
 import Reveal from "@/components/home/Reveal";
+import ProfileMediaOrb from "@/components/about/ProfileMediaOrb";
 import type { Metadata } from "next";
+import {
+  publicTelegramUrl,
+  publicWhatsappUrl,
+} from "@/lib/profile-identity";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "About – Emmanuel Ajibade",
-  description: "Learn more about Emmanuel Ajibade, his skills, background, and what he does.",
+  title: "About Emmanuel Ajibade",
+  description:
+    "Learn more about Emmanuel Ajibade, a tech specialist and software developer building modern software, design-led experiences, and thoughtful digital products.",
   alternates: { canonical: `${siteUrl}/about` },
   openGraph: {
-    title: "About – Emmanuel Ajibade",
-    description: "Learn more about Emmanuel Ajibade, his skills, background, and what he does.",
+    title: "About Emmanuel Ajibade",
+    description:
+      "Profile of Emmanuel Ajibade, a tech specialist and software developer creating projects, design work, and practical digital experiences.",
     url: `${siteUrl}/about`,
     type: "website",
   },
@@ -28,12 +34,56 @@ export default async function AboutPage() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: profile.name,
+    givenName: "Emmanuel",
+    familyName: "Ajibade",
+    alternateName: ["Emmanuel Aduragbemi Ajibade", "Ajibade Emmanuel", "E. A. Ajibade"],
     jobTitle: profile.title,
+    description:
+      "Emmanuel Ajibade is a tech specialist and software developer focused on modern software, design-led experiences, and meaningful digital products.",
     email: profile.contactEmail,
     telephone: profile.phone,
-    address: { "@type": "PostalAddress", addressLocality: profile.location },
+    address: profile.location ? { "@type": "PostalAddress", addressLocality: profile.location } : undefined,
     sameAs: profile.socialLinks.map((link) => link.url),
+    knowsAbout: [...(profile.skills || []), ...(profile.interests || [])],
+    image: profile.profileImage?.url,
+    "@id": `${siteUrl}/#person`,
+    url: siteUrl,
   };
+
+  const profilePageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    name: `About ${profile.name}`,
+    description:
+      "Professional profile of Emmanuel Ajibade, a tech specialist and software developer working across software, design, and digital product experiences.",
+    url: `${siteUrl}/about`,
+    mainEntityOfPage: `${siteUrl}/about`,
+    mainEntity: {
+      "@id": `${siteUrl}/#person`,
+      "@type": "Person",
+      name: profile.name,
+      jobTitle: profile.title,
+    },
+  };
+
+  const profileSchema = [personJsonLd, profilePageJsonLd];
+
+  const profileMedia = [
+    { type: "image" as const, src: "/assets/img/emma1.png", alt: "Emmanuel portrait 1" },
+    { type: "image" as const, src: "/assets/img/emma10.png", alt: "Emmanuel portrait 10" },
+    { type: "image" as const, src: "/assets/img/emma11.png", alt: "Emmanuel portrait 11" },
+    { type: "image" as const, src: "/assets/img/emma2.png", alt: "Emmanuel portrait 2" },
+    { type: "image" as const, src: "/assets/img/emma3.png", alt: "Emmanuel portrait 3" },
+    { type: "image" as const, src: "/assets/img/emma4.png", alt: "Emmanuel portrait 4" },
+    { type: "image" as const, src: "/assets/img/emma5.jpg", alt: "Emmanuel portrait 5" },
+    { type: "image" as const, src: "/assets/img/emma6.png", alt: "Emmanuel portrait 6" },
+    { type: "image" as const, src: "/assets/img/emma7.png", alt: "Emmanuel portrait 7" },
+    { type: "image" as const, src: "/assets/img/emma8.png", alt: "Emmanuel portrait 8" },
+    { type: "image" as const, src: "/assets/img/emmanuel.png", alt: "Emmanuel portrait main" },
+    { type: "video" as const, src: "/assets/video/Code_displaying_on_futuristic_te…_202609021237.mp4" },
+    { type: "video" as const, src: "/assets/video/Holographic_programming_tags_rot…_202609021244.mp4" },
+    { type: "video" as const, src: "/assets/video/Technology_logos_morphing_202609021251.mp4" },
+  ];
 
   // Categorize skills (adjust as needed)
   const skillCategories = {
@@ -52,7 +102,7 @@ export default async function AboutPage() {
     <main>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(profileSchema) }}
       />
       <Container>
         <section className="py-16 sm:py-20 lg:py-24">
@@ -62,34 +112,18 @@ export default async function AboutPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-widest text-orange-600 mb-3">
-                    About Me
+                    Tech Specialist & Software Developer
                   </p>
                   <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-                    {profile.name}
+                    About Emmanuel Ajibade
                   </h1>
                   <p className="mt-4 text-lg text-slate-700">
-                    {profile.shortIntro}
+                    Emmanuel Aduragbemi Ajibade is a Tech Specialist &amp; Software Developer based in
+                    Lagos, Nigeria, working across software development and design.
                   </p>
                 </div>
                 <div className="flex justify-center">
-                  {profile.profileImage?.url ? (
-                    <div className="relative h-48 w-48 md:h-64 md:w-64 rounded-full overflow-hidden border-4 border-white/50 shadow-xl">
-                      <Image
-                        src={profile.profileImage.url}
-                        alt={profile.profileImage.altText || profile.name}
-                        fill
-                        className="object-cover"
-                        sizes="256px"
-                        unoptimized
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-48 w-48 md:h-64 md:w-64 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
-                      <span className="text-6xl font-bold text-slate-500">
-                        {profile.name.charAt(0)}
-                      </span>
-                    </div>
-                  )}
+                  <ProfileMediaOrb items={profileMedia} />
                 </div>
               </div>
             </div>
@@ -98,9 +132,19 @@ export default async function AboutPage() {
           {/* Bio Section */}
           <Reveal delay={0.1}>
             <div className="glass-panel rounded-[28px] p-6 sm:p-8 mt-8">
-              <h2 className="text-2xl font-semibold text-slate-900">Biography</h2>
+              <h2 className="text-2xl font-semibold text-slate-900">Professional profile</h2>
               <p className="mt-4 text-slate-700 leading-relaxed">
-                {profile.bio}
+                Emmanuel Ajibade builds practical digital experiences with technologies including
+                TypeScript, React, Next.js, Node.js, and Tailwind CSS. His work includes
+                web applications, developer tools, and portfolio experiences, with projects such as
+                Collabe, a collaboration platform, and Cloud Backup, an in-progress tool for managing
+                cloud file backups.
+              </p>
+              <p className="mt-4 text-slate-700 leading-relaxed">
+                Alongside software, he creates posters, brand identity work, social media kits, dashboard
+                interfaces, print pieces, and motion graphics. This website brings those projects together
+                with design work and writing about learning Next.js and connecting design decisions with
+                practical development.
               </p>
             </div>
           </Reveal>
@@ -145,6 +189,17 @@ export default async function AboutPage() {
                 <h2 className="text-2xl font-semibold text-slate-900">Location</h2>
                 <p className="mt-4 text-slate-700">{profile.location}</p>
                 <p className="mt-2 text-sm text-slate-500">Open to remote work and collaboration.</p>
+                <div className="mt-6 space-y-2 text-sm text-slate-700">
+                  <a href={`tel:${profile.phone?.replace(/\s/g, "")}`} className="block hover:text-orange-600">
+                    Phone: {profile.phone}
+                  </a>
+                  <a href={publicWhatsappUrl} target="_blank" rel="noopener noreferrer" className="block hover:text-orange-600">
+                    WhatsApp: {profile.phone}
+                  </a>
+                  <a href={publicTelegramUrl} target="_blank" rel="noopener noreferrer" className="block hover:text-orange-600">
+                    Telegram: {profile.phone}
+                  </a>
+                </div>
               </div>
             </div>
           </Reveal>

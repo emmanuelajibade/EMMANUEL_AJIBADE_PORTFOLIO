@@ -41,16 +41,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function DesignDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  console.log("Design slug:", slug);
 
   let work = await getDesignBySlug(slug);
-  console.log("Design from getDesignBySlug:", work);
 
   // Fallback: if not found, try fetching all and find by slug
   if (!work) {
     const allDesigns = await getDesigns();
     work = allDesigns.find((d) => d.slug === slug) || null;
-    console.log("Design from fallback:", work);
   }
 
   if (!work) {
@@ -71,9 +68,13 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ s
     "@type": "CreativeWork",
     name: work.title,
     description: work.description || work.title,
+    url: `${siteUrl}/design/${work.slug}`,
+    mainEntityOfPage: `${siteUrl}/design/${work.slug}`,
     dateCreated: work.date,
     image: mediaItems[0]?.url,
-    author: { "@type": "Person", name: "Emmanuel Ajibade" },
+    author: { "@type": "Person", name: "Emmanuel Ajibade", url: siteUrl },
+    creator: { "@type": "Person", name: "Emmanuel Ajibade", url: siteUrl },
+    genre: work.category,
   };
 
   return (
@@ -97,7 +98,9 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ s
           <Reveal>
             <div className="glass-panel-strong rounded-[32px] p-6 sm:p-8 lg:p-12 mb-8">
               <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">{work.title}</h1>
-              <p className="mt-2 text-muted-foreground">{work.category}</p>
+              <p className="mt-2 text-muted-foreground">
+                {work.category} design by Emmanuel Ajibade
+              </p>
             </div>
           </Reveal>
 
@@ -112,7 +115,7 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ s
           {work.description && (
             <Reveal delay={0.15}>
               <div className="glass-panel rounded-2xl p-6 mb-8">
-                <h2 className="text-xl font-semibold text-slate-900">About this work</h2>
+                <h2 className="text-xl font-semibold text-slate-900">About this design work</h2>
                 <p className="mt-4 text-slate-700 leading-relaxed">{work.description}</p>
               </div>
             </Reveal>

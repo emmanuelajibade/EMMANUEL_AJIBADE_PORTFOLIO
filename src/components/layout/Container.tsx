@@ -8,7 +8,7 @@ interface ContainerProps {
 export default function Container({ children, wide = false }: ContainerProps) {
   return (
     <div
-      className={`mx-auto px-4 sm:px-6 lg:px-8 ${
+      className={`mx-auto w-full px-4 sm:px-6 lg:px-8 ${
         wide ? 'max-w-screen-2xl' : 'max-w-7xl'
       }`}
     >

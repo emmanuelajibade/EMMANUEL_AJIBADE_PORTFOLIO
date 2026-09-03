@@ -1,10 +1,11 @@
 import Container from "@/components/layout/Container";
 import Link from "next/link";
 import type { Profile } from "@/types/content";
+import { publicTelegramUrl, publicWhatsappUrl } from "@/lib/profile-identity";
 
 export default function Footer({ profile }: { profile: Profile }) {
   return (
-    <footer className="px-4 pb-6 sm:px-6 lg:px-8">
+    <footer className="px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-6 lg:px-8">
       <Container>
         <div className="glass-panel rounded-[28px] px-6 py-8 sm:px-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
@@ -36,6 +37,16 @@ export default function Footer({ profile }: { profile: Profile }) {
                     </a>
                   </li>
                 ))}
+                <li>
+                  <a href={publicWhatsappUrl} className="text-sm text-slate-700 hover:text-slate-900 transition-colors" target="_blank" rel="noopener noreferrer">
+                    WhatsApp
+                  </a>
+                </li>
+                <li>
+                  <a href={publicTelegramUrl} className="text-sm text-slate-700 hover:text-slate-900 transition-colors" target="_blank" rel="noopener noreferrer">
+                    Telegram
+                  </a>
+                </li>
               </ul>
             </div>
           </div>

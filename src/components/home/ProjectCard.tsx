@@ -30,6 +30,9 @@ export default function ProjectCard({ project }: { project: Project }) {
       <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-700">
         {project.shortDescription}
       </p>
+      <p className="mt-2 text-xs font-medium uppercase tracking-wide text-slate-500">
+        {project.type} · {project.role}
+      </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {project.technologies.slice(0, 4).map((tech) => (

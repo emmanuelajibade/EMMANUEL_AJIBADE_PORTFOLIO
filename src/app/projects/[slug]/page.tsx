@@ -53,10 +53,14 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     "@type": "CreativeWork",
     name: project.title,
     description: project.shortDescription,
-    author: { "@type": "Person", name: "Emmanuel Ajibade" },
+    url: `${siteUrl}/projects/${project.slug}`,
+    mainEntityOfPage: `${siteUrl}/projects/${project.slug}`,
+    creator: { "@type": "Person", name: "Emmanuel Ajibade", url: siteUrl },
+    author: { "@type": "Person", name: "Emmanuel Ajibade", url: siteUrl },
     datePublished: project.date,
     image: mediaItems[0]?.url,
     keywords: project.tags.join(", "),
+    inLanguage: "en",
   };
 
   const features = project.features || [];
@@ -88,6 +92,9 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <p className="mt-4 text-lg text-slate-700 max-w-2xl">
               {project.shortDescription}
             </p>
+            <p className="mt-3 text-sm text-slate-500">
+              A project by Emmanuel Ajibade, built as part of his software development work.
+            </p>
           </div>
 
           {/* Carousel / Main Image */}
@@ -100,7 +107,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           {/* Details Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="glass-panel rounded-2xl p-5">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Role</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Emmanuel&apos;s role</h2>
               <p className="mt-2 text-slate-800">{project.role}</p>
             </div>
             <div className="glass-panel rounded-2xl p-5">

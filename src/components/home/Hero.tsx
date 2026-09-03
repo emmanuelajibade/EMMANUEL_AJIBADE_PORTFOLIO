@@ -4,6 +4,7 @@ import { motion, useReducedMotion, type Variants } from "motion/react";
 import type { Profile } from "@/types/content";
 import Container from "@/components/layout/Container";
 import MagneticButton from "@/components/layout/MagneticButton";
+import NameCycle from "@/components/home/NameCycle";
 
 interface HeroProps {
   profile: Profile;
@@ -68,11 +69,20 @@ export default function Hero({ profile }: HeroProps) {
             {profile.name}
           </motion.h1>
 
+          <motion.div
+            variants={prefersReducedMotion ? undefined : itemVariants}
+            className="mt-3 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-sm"
+            aria-hidden="true"
+          >
+            <NameCycle className="inline-block text-blue-600" />
+          </motion.div>
+
           <motion.p
             variants={prefersReducedMotion ? undefined : itemVariants}
             className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-700"
           >
-            {profile.shortIntro}
+            I build practical digital products with modern web technologies and bring a design-minded
+            approach to the way they look, feel, and work.
           </motion.p>
 
           <motion.div

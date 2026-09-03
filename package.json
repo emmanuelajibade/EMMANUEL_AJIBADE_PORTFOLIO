@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@cerebras/cerebras_cloud_sdk": "^1.91.0",
+    "@huggingface/inference": "^4.13.28",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",
     "imagekit": "^6.0.0",

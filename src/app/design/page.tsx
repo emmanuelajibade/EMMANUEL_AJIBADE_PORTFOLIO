@@ -28,12 +28,15 @@ export default async function DesignPage() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Design Work",
+    description: "Visual design work by Emmanuel Ajibade.",
+    url: `${siteUrl}/design`,
     itemListElement: designs.map((work, index) => ({
       "@type": "CreativeWork",
       position: index + 1,
       name: work.title,
       url: `${siteUrl}/design/${work.slug}`,
       image: work.image?.url?.startsWith("http") ? work.image.url : undefined,
+      creator: { "@type": "Person", name: "Emmanuel Ajibade", url: siteUrl },
     })),
   };
 
@@ -51,7 +54,8 @@ export default async function DesignPage() {
                 Design Work
               </h1>
               <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                A collection of visual design work that complements my engineering.
+                A gallery of Emmanuel Ajibade&apos;s visual design work, spanning posters, branding,
+                interface design, social media, print, and motion.
               </p>
             </header>
           </Reveal>

@@ -1,8 +1,15 @@
 import type { MetadataRoute } from "next";
-import { projects, designWorks, writingPosts } from "@/lib/mock-data";
+import { getDesigns, getPublishedProjects, getWritingPosts } from "@/lib/data";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = "force-dynamic";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const [projects, designs, writingPosts] = await Promise.all([
+    getPublishedProjects(),
+    getDesigns(),
+    getWritingPosts(),
+  ]);
 
   // Static pages
   const staticRoutes = [
@@ -16,7 +23,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Project pages
   const projectRoutes = projects
-    .filter((p) => p.visibility === "published")
     .map((p) => ({
       url: `${baseUrl}/projects/${p.slug}`,
       lastModified: new Date(p.date),
@@ -25,12 +31,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }));
 
   // Design pages
-  const designRoutes = designWorks.map((d) => ({
+  const designRoutes = designs
+    .filter((d) => d.active !== false)
+    .map((d) => ({
     url: `${baseUrl}/design/${d.slug}`,
     lastModified: new Date(d.date),
     changeFrequency: "monthly" as const,
     priority: 0.7,
-  }));
+    }));
 
   // Writing pages
   const writingRoutes = writingPosts

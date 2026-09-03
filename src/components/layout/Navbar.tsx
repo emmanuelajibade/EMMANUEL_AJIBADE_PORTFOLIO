@@ -35,6 +35,11 @@ export default function Navbar({ projects }: NavbarProps) {
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
+  useEffect(() => {
+    setMobileOpen(false);
+    setProjectsOpen(false);
+  }, [pathname]);
+
   async function handleLogout() {
     await supabaseClient.auth.signOut();
     setMobileOpen(false);
@@ -64,10 +69,11 @@ export default function Navbar({ projects }: NavbarProps) {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4 lg:px-6">
-      <nav className="glass-panel relative mx-auto flex max-w-7xl items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
+      <nav aria-label="Primary navigation" className="glass-panel relative mx-auto flex max-w-7xl items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
         <Link
           href="/"
           className="font-display text-xl font-black tracking-tight text-slate-900 transition-transform hover:scale-105"
+          aria-label="Emmanuel Ajibade home"
         >
           Emmanuel
         </Link>
@@ -175,7 +181,7 @@ export default function Navbar({ projects }: NavbarProps) {
 
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="inline-flex items-center justify-center rounded-xl p-2 text-slate-800 md:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl p-2 text-slate-800 md:hidden"
           aria-label="Toggle menu"
           aria-expanded={mobileOpen}
         >

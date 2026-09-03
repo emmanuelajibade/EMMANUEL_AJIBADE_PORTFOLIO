@@ -1,5 +1,6 @@
 import { supabasePublic } from "./supabase-public";
 import type { Profile, Project, DesignWork, WritingPost } from "@/types/content";
+import { normalizePublicSocialLinks, publicPhone } from "./profile-identity";
 
 // Define raw row types (matching Supabase columns)
 interface ProfileRow {
@@ -86,8 +87,8 @@ function mapProfile(row: ProfileRow): Profile {
     interests: row.interests || [],
     profileImage: row.profile_image,
     location: row.location || undefined,
-    phone: row.phone || undefined,
-    socialLinks: row.social_links || [],
+    phone: publicPhone,
+    socialLinks: normalizePublicSocialLinks(row.social_links || []),
     contactEmail: row.contact_email,
   };
 }

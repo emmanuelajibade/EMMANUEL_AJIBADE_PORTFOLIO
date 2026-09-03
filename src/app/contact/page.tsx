@@ -3,6 +3,10 @@ import Container from "@/components/layout/Container";
 import Reveal from "@/components/home/Reveal";
 import ContactForm from "./ContactForm";
 import type { Metadata } from "next";
+import {
+  publicTelegramUrl,
+  publicWhatsappUrl,
+} from "@/lib/profile-identity";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -48,7 +52,8 @@ export default async function ContactPage() {
                 Let&apos;s work together
               </h1>
               <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                I&apos;m open to new opportunities, collaborations, and ideas.
+                Contact Emmanuel Ajibade about a software project, a design-led digital experience,
+                a collaboration, or a technical idea you would like to discuss.
               </p>
             </header>
           </Reveal>
@@ -58,7 +63,7 @@ export default async function ContactPage() {
             <Reveal delay={0.1}>
               <div className="glass-panel rounded-[28px] p-6 sm:p-8">
                 <h2 className="text-2xl font-semibold text-slate-900">
-                  Direct Contact
+                  Contact Emmanuel directly
                 </h2>
                 <div className="mt-6 space-y-6">
                   <div>
@@ -75,7 +80,7 @@ export default async function ContactPage() {
                   {profile.phone && (
                     <div>
                       <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                        Phone / WhatsApp
+                        Phone
                       </h3>
                       <a
                         href={`tel:${profile.phone.replace(/\s/g, "")}`}
@@ -83,6 +88,22 @@ export default async function ContactPage() {
                       >
                         {profile.phone}
                       </a>
+                    </div>
+                  )}
+                  {profile.phone && (
+                    <div>
+                      <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                        WhatsApp &amp; Telegram
+                      </h3>
+                      <div className="mt-2 flex flex-wrap gap-3 text-lg">
+                        <a href={publicWhatsappUrl} target="_blank" rel="noopener noreferrer" className="text-slate-800 hover:text-orange-600 transition-colors">
+                          WhatsApp
+                        </a>
+                        <a href={publicTelegramUrl} target="_blank" rel="noopener noreferrer" className="text-slate-800 hover:text-orange-600 transition-colors">
+                          Telegram
+                        </a>
+                      </div>
+                      <p className="mt-1 text-sm text-slate-500">{profile.phone}</p>
                     </div>
                   )}
                   <div>
@@ -96,7 +117,7 @@ export default async function ContactPage() {
                 <div className="mt-8">
                   <h2 className="text-xl font-semibold text-slate-900">Social</h2>
                   <div className="mt-4 flex flex-wrap gap-3">
-                    {profile.socialLinks.map((link: any) => (
+                    {profile.socialLinks.map((link) => (
                       <a
                         key={link.platform}
                         href={link.url}
