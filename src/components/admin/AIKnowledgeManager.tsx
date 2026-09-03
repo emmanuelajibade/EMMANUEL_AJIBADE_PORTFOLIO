@@ -27,13 +27,13 @@ export default function AIKnowledgeManager() {
 
       if (error) {
         setError(error.message);
-        toast.error(error.message);
+        console.error("Supabase error:", error);
       } else {
         setItems(data || []);
       }
     } catch (err) {
-      setError("Failed to fetch knowledge. Check your RLS policies.");
-      toast.error("Failed to fetch knowledge.");
+      setError("Failed to fetch knowledge. Check your RLS policies and table.");
+      console.error("Fetch error:", err);
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,10 @@ export default function AIKnowledgeManager() {
 
       {!loading && error && (
         <div className="text-center py-12 border-2 border-dashed border-red-300 rounded-lg">
-          <p className="text-red-600">{error}</p>
+          <p className="text-red-600 font-medium">{error}</p>
+          <p className="text-sm text-slate-500 mt-2">
+            Check that the `ai_knowledge` table exists and RLS policies are set.
+          </p>
           <button
             onClick={fetchItems}
             className="mt-4 text-sm text-blue-600 hover:underline"
