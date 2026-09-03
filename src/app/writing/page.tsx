@@ -5,7 +5,7 @@ import Image from "next/image";
 import Reveal from "@/components/home/Reveal";
 import type { Metadata } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://emmanuel-ajibade-portfolio.vercel.app";
 
 export const dynamic = "force-dynamic";
 

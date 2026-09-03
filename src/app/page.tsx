@@ -6,7 +6,7 @@ import { getProfile, getPublishedProjects, getDesigns } from "@/lib/data";
 import type { Metadata } from "next";
 import { publicFacebookUrl, publicGithubUrl } from "@/lib/profile-identity";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://emmanuel-ajibade-portfolio.vercel.app";
 
 export const dynamic = "force-dynamic";
 

@@ -11,7 +11,7 @@ import AIChatWidget from "@/components/ai/AIChatWidget";
 import { getProfile, getPublishedProjects } from "@/lib/data";
 import { publicFacebookUrl, publicGithubUrl } from "@/lib/profile-identity";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://emmanuel-ajibade-portfolio.vercel.app";
 
 export const dynamic = "force-dynamic";
 
