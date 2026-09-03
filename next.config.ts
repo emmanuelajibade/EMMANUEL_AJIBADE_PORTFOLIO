@@ -9,14 +9,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "placehold.co" },
     ],
   },
-  // Webpack watch options for network drives
-  webpack: (config) => {
-    config.watchOptions = {
-      poll: 1000, // Check for changes every 1 second
-      aggregateTimeout: 300,
-    };
-    return config;
-  },
+  turbopack: {},
 };
 
 export default nextConfig;
