@@ -1,9 +1,4 @@
-import type {
-  Profile,
-  Project,
-  DesignWork,
-  WritingPost,
-} from "@/types/content";
+import type { Profile, Project, DesignWork, WritingPost } from "@/types/content";
 import type { AIKnowledge } from "@/types/ai";
 import {
   publicFacebookUrl,
