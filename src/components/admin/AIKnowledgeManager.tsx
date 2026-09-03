@@ -10,6 +10,7 @@ export default function AIKnowledgeManager() {
   const [editing, setEditing] = useState<any | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchItems();
@@ -17,13 +18,25 @@ export default function AIKnowledgeManager() {
 
   async function fetchItems() {
     setLoading(true);
-    const { data, error } = await supabaseClient
-      .from("ai_knowledge")
-      .select("*")
-      .order("importance", { ascending: false });
-    if (error) toast.error(error.message);
-    else setItems(data || []);
-    setLoading(false);
+    setError(null);
+    try {
+      const { data, error } = await supabaseClient
+        .from("ai_knowledge")
+        .select("*")
+        .order("importance", { ascending: false });
+
+      if (error) {
+        setError(error.message);
+        toast.error(error.message);
+      } else {
+        setItems(data || []);
+      }
+    } catch (err) {
+      setError("Failed to fetch knowledge. Check your RLS policies.");
+      toast.error("Failed to fetch knowledge.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleToggleActive(id: string, currentActive: boolean) {
@@ -89,13 +102,25 @@ export default function AIKnowledgeManager() {
 
       {loading && <div className="text-center py-8 text-slate-500">Loading...</div>}
 
-      {!loading && items.length === 0 && (
+      {!loading && error && (
+        <div className="text-center py-12 border-2 border-dashed border-red-300 rounded-lg">
+          <p className="text-red-600">{error}</p>
+          <button
+            onClick={fetchItems}
+            className="mt-4 text-sm text-blue-600 hover:underline"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && items.length === 0 && (
         <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg">
           <p className="text-slate-500">No knowledge yet. Add some!</p>
         </div>
       )}
 
-      {!loading && items.length > 0 && (
+      {!loading && !error && items.length > 0 && (
         <div className="space-y-4">
           {items.map((item) => (
             <div
