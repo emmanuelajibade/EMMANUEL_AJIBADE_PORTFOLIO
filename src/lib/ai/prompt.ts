@@ -3,8 +3,8 @@ import type {
   Project,
   DesignWork,
   WritingPost,
-  AIKnowledge,
 } from "@/types/content";
+import type { AIKnowledge } from "@/types/ai";
 import {
   publicFacebookUrl,
   publicGithubUrl,

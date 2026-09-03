@@ -1,5 +1,6 @@
 import { supabasePublic } from "@/lib/supabase-public";
-import type { AIKnowledge, Project, DesignWork, WritingPost, Profile } from "@/types/content";
+import type { Profile, Project, DesignWork, WritingPost } from "@/types/content";
+import type { AIKnowledge } from "@/types/ai";
 import { normalizePublicSocialLinks, publicPhone } from "@/lib/profile-identity";
 
 export async function getPublicAIKnowledge(): Promise<AIKnowledge[]> {
@@ -76,6 +77,6 @@ export function filterRelevantKnowledge(knowledge: AIKnowledge[], query: string)
   return knowledge.filter(k =>
     k.title.toLowerCase().includes(lower) ||
     k.content.toLowerCase().includes(lower) ||
-    k.tags.some(t => lower.includes(t.toLowerCase()))
+    k.tags.some((t: string) => lower.includes(t.toLowerCase()))
   );
 }

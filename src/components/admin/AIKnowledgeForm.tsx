@@ -44,7 +44,7 @@ export default function AIKnowledgeForm({ knowledge, onSaved, onCancel }: AIKnow
       content: formData.content,
       visibility: formData.visibility,
       importance: Number(formData.importance),
-      tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
+      tags: formData.tags.split(",").map((t: string) => t.trim()).filter(Boolean),
       active: formData.active,
     };
 
