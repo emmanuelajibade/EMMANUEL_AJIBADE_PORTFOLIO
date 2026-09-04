@@ -11,7 +11,6 @@ import { buildSystemPrompt } from "@/lib/ai/prompt";
 import { callAIModel } from "@/lib/ai/server";
 import { AIChatMessage } from "@/types/ai";
 
-// Ensure no caching – always fetch latest data
 export const revalidate = 0;
 
 export async function POST(req: Request) {
@@ -33,6 +32,7 @@ export async function POST(req: Request) {
     ]);
 
     if (!profile) {
+      console.error("AI Chat - Profile not found");
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
@@ -44,13 +44,16 @@ export async function POST(req: Request) {
       ...messages.filter(m => m.role !== "system"),
     ];
 
+    console.log("AI Chat - Sending to model");
     const aiResponse = await callAIModel(modelMessages);
 
+    console.log("AI Chat - Response received");
     return NextResponse.json({ message: aiResponse });
   } catch (err) {
-    console.error("AI chat error:", err);
+    console.error("AI Chat - Route error:", err);
+    // Don't expose internal error details in production
     return NextResponse.json(
-      { error: "I'm having trouble answering that right now. Please try again later." },
+      { error: "AI service is having trouble right now. Please try again later." },
       { status: 500 }
     );
   }
