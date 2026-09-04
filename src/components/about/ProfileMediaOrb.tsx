@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion, type TargetAndTransition } from "motion/react";
 import Image from "next/image";
 
 interface MediaItem {
@@ -10,7 +10,13 @@ interface MediaItem {
   alt?: string;
 }
 
-const animations: Variants[] = [
+interface AnimationSet {
+  hidden: TargetAndTransition;
+  visible: TargetAndTransition;
+  exit: TargetAndTransition;
+}
+
+const animations: AnimationSet[] = [
   {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1 },
@@ -40,7 +46,7 @@ export default function ProfileMediaOrb({ items }: { items: MediaItem[] }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % items.length);
-    }, 10000); // 10 seconds per item
+    }, 10000);
     return () => clearInterval(interval);
   }, [items.length]);
 
