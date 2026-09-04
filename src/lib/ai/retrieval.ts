@@ -71,7 +71,7 @@ export async function getPublicWriting(): Promise<WritingPost[]> {
   return data || [];
 }
 
-// Simple relevance filter based on keywords
+// Simple relevance filter based on keywords (null-safe)
 export function filterRelevantKnowledge(knowledge: AIKnowledge[], query: string): AIKnowledge[] {
   const lower = query.toLowerCase();
   return knowledge.filter(k =>

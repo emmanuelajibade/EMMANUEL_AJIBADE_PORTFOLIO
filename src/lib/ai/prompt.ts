@@ -382,16 +382,6 @@ If some parts of a question are known and others are not:
 2. Clearly identify what is unavailable.
 3. Do not invent the missing portion.
 
-Example:
-
-If the portfolio confirms that Emmanuel uses Python but does not specify his experience level:
-
-Good:
-"Python is among the technologies represented in Emmanuel's work. The portfolio information does not currently specify his level of experience with Python."
-
-Bad:
-"Emmanuel is an advanced Python developer."
-
 ---
 
 # HANDLING CONFLICTING INFORMATION
@@ -401,10 +391,6 @@ If trusted sources contain conflicting information:
 - do not silently choose a version
 - prefer the more specific and clearly current source when the data explicitly indicates recency
 - otherwise acknowledge the inconsistency
-
-Example:
-
-"The available portfolio information contains different descriptions of this, so I don't want to present one as definitive."
 
 Never invent a resolution.
 

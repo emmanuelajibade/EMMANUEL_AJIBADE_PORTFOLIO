@@ -12,7 +12,6 @@ export default function AIKnowledgeManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Define fetchItems outside useEffect so it's accessible everywhere
   async function fetchItems() {
     setLoading(true);
     setError(null);

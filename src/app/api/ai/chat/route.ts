@@ -23,6 +23,8 @@ export async function POST(req: Request) {
     const lastUserMessage = [...messages].reverse().find(m => m.role === "user");
     const query = lastUserMessage?.content || "";
 
+    console.log("AI Chat - Query:", query.substring(0, 100));
+
     const [profile, projects, designs, writing, allKnowledge] = await Promise.all([
       getPublicProfile(),
       getPublicProjects(),
@@ -31,13 +33,22 @@ export async function POST(req: Request) {
       getPublicAIKnowledge(),
     ]);
 
+    console.log("AI Chat - Profile found:", !!profile);
+    console.log("AI Chat - Projects count:", projects.length);
+    console.log("AI Chat - Designs count:", designs.length);
+    console.log("AI Chat - Writing count:", writing.length);
+    console.log("AI Chat - Knowledge count:", allKnowledge.length);
+
     if (!profile) {
       console.error("AI Chat - Profile not found");
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
     const relevantKnowledge = filterRelevantKnowledge(allKnowledge, query);
+    console.log("AI Chat - Relevant knowledge count:", relevantKnowledge.length);
+
     const systemPrompt = buildSystemPrompt(profile, relevantKnowledge, projects, designs, writing);
+    console.log("AI Chat - System prompt length:", systemPrompt.length);
 
     const modelMessages: AIChatMessage[] = [
       { role: "system", content: systemPrompt },
@@ -51,7 +62,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: aiResponse });
   } catch (err) {
     console.error("AI Chat - Route error:", err);
-    // Don't expose internal error details in production
     return NextResponse.json(
       { error: "AI service is having trouble right now. Please try again later." },
       { status: 500 }
