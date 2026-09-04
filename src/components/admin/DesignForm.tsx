@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
-import { uploadToCloudinary } from "@/lib/upload";
+import { uploadToImageKit } from "@/lib/upload";
 import type { DesignRow } from "@/types/admin";
 
 interface DesignFormProps {
@@ -13,21 +13,27 @@ interface DesignFormProps {
   onCancel: () => void;
 }
 
+interface DesignFormData {
+  title: string;
+  slug: string;
+  category: string;
+  image_url: string;
+  description: string;
+  tags: string;
+  featured: boolean;
+  sort_order: number;
+  date: string;
+  external_link: string;
+  active: boolean;
+  gallery: { url: string; altText?: string }[];
+}
+
+function getDraftKey(designId?: string) {
+  return `design-form-draft:${designId || "new"}`;
+}
+
 export default function DesignForm({ design, onSaved, onCancel }: DesignFormProps) {
-  const [formData, setFormData] = useState<{
-    title: string;
-    slug: string;
-    category: string;
-    image_url: string;
-    description: string;
-    tags: string;
-    featured: boolean;
-    sort_order: number;
-    date: string;
-    external_link: string;
-    active: boolean;
-    gallery: { url: string; altText?: string }[];
-  }>({
+  const [formData, setFormData] = useState<DesignFormData>({
     title: design?.title || "",
     slug: design?.slug || "",
     category: design?.category || "",
@@ -44,8 +50,41 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
 
   const [uploading, setUploading] = useState<"image" | "gallery" | null>(null);
   const [saving, setSaving] = useState(false);
+  const [draftLoaded, setDraftLoaded] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const draftKey = getDraftKey(design?.id);
+
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem(draftKey);
+      if (savedDraft) {
+        const parsedDraft: DesignFormData = JSON.parse(savedDraft);
+        setFormData(parsedDraft);
+      }
+    } catch (error) {
+      console.error("Unable to restore design draft:", error);
+    } finally {
+      setDraftLoaded(true);
+    }
+  }, [draftKey]);
+
+  useEffect(() => {
+    if (!draftLoaded) return;
+    try {
+      localStorage.setItem(draftKey, JSON.stringify(formData));
+    } catch (error) {
+      console.error("Unable to save design draft:", error);
+    }
+  }, [draftKey, draftLoaded, formData]);
+
+  const clearDraft = () => {
+    try {
+      localStorage.removeItem(draftKey);
+    } catch (error) {
+      console.error("Unable to clear design draft:", error);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -61,9 +100,13 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file.");
+      return;
+    }
     setUploading("image");
     try {
-      const url = await uploadToCloudinary(file, "image");
+      const url = await uploadToImageKit(file);
       setFormData((prev) => ({ ...prev, image_url: url }));
       toast.success("Image uploaded!");
     } catch (err) {
@@ -77,11 +120,16 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+    if (imageFiles.length !== files.length) {
+      toast.error("Only image files can be added to the gallery.");
+    }
+    if (imageFiles.length === 0) return;
     setUploading("gallery");
+    const newItems: { url: string; altText?: string }[] = [];
     try {
-      const newItems: { url: string; altText?: string }[] = [];
-      for (const file of files) {
-        const url = await uploadToCloudinary(file, "image");
+      for (const file of imageFiles) {
+        const url = await uploadToImageKit(file);
         newItems.push({ url });
       }
       setFormData((prev) => ({
@@ -90,6 +138,13 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
       }));
       toast.success(`${newItems.length} image(s) added to gallery!`);
     } catch (err) {
+      if (newItems.length > 0) {
+        setFormData((prev) => ({ ...prev, gallery: [...prev.gallery, ...newItems] }));
+        toast.error(
+          `${newItems.length} of ${imageFiles.length} gallery images uploaded. ${err instanceof Error ? err.message : "The remaining upload failed."}`
+        );
+        return;
+      }
       toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploading(null);
@@ -120,13 +175,23 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
     e.preventDefault();
     if (!validate()) return;
     setSaving(true);
+    const normalizedSlug = formData.slug
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+    if (!normalizedSlug) {
+      toast.error("Slug must contain letters or numbers.");
+      setSaving(false);
+      return;
+    }
 
     const designData = {
       title: formData.title,
-      slug: formData.slug,
+      slug: normalizedSlug,
       category: formData.category,
       image: formData.image_url
-        ? { url: formData.image_url, provider: "cloudinary" }
+        ? { url: formData.image_url, provider: "imagekit" }
         : null,
       description: formData.description,
       tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
@@ -144,6 +209,7 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
 
     if (error) toast.error(error.message);
     else {
+      clearDraft();
       toast.success(design ? "Design updated! AI will now know about it." : "Design created! AI will now know about it.");
       onSaved();
     }
@@ -156,7 +222,7 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
         <h3 className="text-lg font-semibold text-slate-900">
           {design ? "Edit Design" : "Add New Design"}
         </h3>
-        <button type="button" onClick={onCancel} className="text-sm text-slate-500 hover:text-slate-700">
+        <button type="button" onClick={() => { clearDraft(); onCancel(); }} className="text-sm text-slate-500 hover:text-slate-700">
           Cancel
         </button>
       </div>
@@ -372,7 +438,7 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
         </button>
         <button
           type="button"
-          onClick={onCancel}
+          onClick={() => { clearDraft(); onCancel(); }}
           className="glass-button px-6 py-2 text-sm font-medium text-slate-700 rounded-lg"
         >
           Cancel

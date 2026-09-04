@@ -202,10 +202,17 @@ export async function getDesigns(): Promise<DesignWork[]> {
 }
 
 export async function getDesignBySlug(slug: string): Promise<DesignWork | null> {
+  let normalizedSlug = slug;
+  try {
+    normalizedSlug = decodeURIComponent(slug);
+  } catch (error) {
+    if (!(error instanceof URIError)) throw error;
+  }
+  normalizedSlug = normalizedSlug.trim().toLowerCase();
   const { data, error } = await supabasePublic
     .from("designs")
     .select("*")
-    .eq("slug", slug)
+    .ilike("slug", normalizedSlug)
     .eq("active", true)
     .maybeSingle();
   if (error) return null;

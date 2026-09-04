@@ -23,7 +23,28 @@ export default function DesignsManager() {
       .select("*")
       .order("sort_order", { ascending: true });
     if (error) toast.error(error.message);
-    else setDesigns(data || []);
+    else {
+      const loadedDesigns = data || [];
+      setDesigns(loadedDesigns);
+      try {
+        const draftKey = Object.keys(localStorage).find((key) =>
+          key.startsWith("design-form-draft:")
+        );
+        if (draftKey) {
+          const draftDesignId = draftKey.replace("design-form-draft:", "");
+          const draftDesign =
+            draftDesignId === "new"
+              ? null
+              : loadedDesigns.find((item) => item.id === draftDesignId);
+          if (draftDesignId === "new" || draftDesign) {
+            setEditingDesign(draftDesign || null);
+            setShowForm(true);
+          }
+        }
+      } catch (storageError) {
+        console.error("Unable to inspect saved design drafts:", storageError);
+      }
+    }
     setLoading(false);
   }
 
