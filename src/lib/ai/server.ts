@@ -45,4 +45,4 @@ export async function callAIModel(messages: AIChatMessage[]): Promise<string> {
     console.error("AI Chat - Error:", error);
     throw error;
   }
-}
+};
