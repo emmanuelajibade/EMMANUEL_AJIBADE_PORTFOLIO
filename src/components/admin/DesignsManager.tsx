@@ -24,7 +24,7 @@ export default function DesignsManager() {
       .order("sort_order", { ascending: true });
     if (error) toast.error(error.message);
     else {
-      const loadedDesigns = data || [];
+      const loadedDesigns: DesignRow[] = data || [];
       setDesigns(loadedDesigns);
       try {
         const draftKey = Object.keys(localStorage).find((key) =>
