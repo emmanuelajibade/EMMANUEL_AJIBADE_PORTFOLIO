@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   creator: "Emmanuel Ajibade",
   publisher: "Emmanuel Ajibade",
   other: {
+    "google-site-verification": "I4RWV66molirPn4ki_IxbvTODXT8uWzAFIE9t0lnAKA",
     "profile:facebook": publicFacebookUrl,
     "profile:github": publicGithubUrl,
   },
