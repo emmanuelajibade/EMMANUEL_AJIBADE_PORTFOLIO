@@ -29,13 +29,13 @@ export async function getPublicProfile(): Promise<Profile | null> {
     title: String(profile.title || "Tech Specialist & Software Developer"),
     shortIntro: String(profile.short_intro || ""),
     bio: String(profile.bio || ""),
-    skills: Array.isArray(profile.skills) ? profile.skills as string[] : [],
-    interests: Array.isArray(profile.interests) ? profile.interests as string[] : [],
-    profileImage: profile.profile_image as Profile["profileImage"],
-    location: profile.location as string | undefined,
+    skills: Array.isArray(profile.skills) ? (profile.skills as string[]) : [],
+    interests: Array.isArray(profile.interests) ? (profile.interests as string[]) : [],
+    profileImage: (profile.profile_image as Profile["profileImage"]) || null,
+    location: (profile.location as string) || undefined,
     phone: publicPhone,
     socialLinks: normalizePublicSocialLinks(
-      Array.isArray(profile.social_links) ? profile.social_links as Profile["socialLinks"] : []
+      Array.isArray(profile.social_links) ? (profile.social_links as Profile["socialLinks"]) : []
     ),
     contactEmail: String(profile.contact_email || ""),
   };
@@ -49,7 +49,7 @@ export async function getPublicProjects(): Promise<Project[]> {
     .eq("active", true)
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
-  return data as Project[];
+  return data || [];
 }
 
 export async function getPublicDesigns(): Promise<DesignWork[]> {
@@ -58,7 +58,7 @@ export async function getPublicDesigns(): Promise<DesignWork[]> {
     .select("*")
     .eq("active", true);
   if (error) throw new Error(error.message);
-  return data as DesignWork[];
+  return data || [];
 }
 
 export async function getPublicWriting(): Promise<WritingPost[]> {
@@ -68,15 +68,15 @@ export async function getPublicWriting(): Promise<WritingPost[]> {
     .eq("visibility", "published")
     .eq("active", true);
   if (error) throw new Error(error.message);
-  return data as WritingPost[];
+  return data || [];
 }
 
 // Simple relevance filter based on keywords
 export function filterRelevantKnowledge(knowledge: AIKnowledge[], query: string): AIKnowledge[] {
   const lower = query.toLowerCase();
   return knowledge.filter(k =>
-    k.title.toLowerCase().includes(lower) ||
-    k.content.toLowerCase().includes(lower) ||
-    k.tags.some((t: string) => lower.includes(t.toLowerCase()))
+    (k.title || "").toLowerCase().includes(lower) ||
+    (k.content || "").toLowerCase().includes(lower) ||
+    (Array.isArray(k.tags) ? k.tags : []).some((t: string) => lower.includes((t || "").toLowerCase()))
   );
 }

@@ -34,10 +34,12 @@ export async function callAIModel(messages: AIChatMessage[]): Promise<string> {
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || "";
+
+    // Safely extract content
+    const content = data?.choices?.[0]?.message?.content || "";
     console.log("AI Chat - Response length:", content.length);
 
-    // Remove any chain-of-thought if it got included (safety)
+    // Remove any chain-of-thought if it got included
     return content.replace(/```thinking[\s\S]*?```/g, "").trim();
   } catch (error) {
     console.error("AI Chat - Error:", error);
