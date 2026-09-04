@@ -11,6 +11,9 @@ import { buildSystemPrompt } from "@/lib/ai/prompt";
 import { callAIModel } from "@/lib/ai/server";
 import { AIChatMessage } from "@/types/ai";
 
+// Ensure no caching – always fetch latest data
+export const revalidate = 0;
+
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();

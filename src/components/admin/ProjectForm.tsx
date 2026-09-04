@@ -244,7 +244,7 @@ export default function ProjectForm({ project, onSaved, onCancel }: ProjectFormP
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success(project ? "Project updated!" : "Project created!");
+      toast.success(project ? "Project updated! AI will now know about it." : "Project created! AI will now know about it.");
       onSaved();
     }
     setSaving(false);

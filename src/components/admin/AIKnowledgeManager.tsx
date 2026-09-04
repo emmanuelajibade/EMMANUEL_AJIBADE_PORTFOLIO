@@ -5,7 +5,6 @@ import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
 import AIKnowledgeForm from "./AIKnowledgeForm";
 
-
 export default function AIKnowledgeManager() {
   const [items, setItems] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
@@ -14,31 +13,32 @@ export default function AIKnowledgeManager() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    async function fetchItems() {
+      setLoading(true);
+      setError(null);
+      try {
+        const { data, error } = await supabaseClient
+          .from("ai_knowledge")
+          .select("*")
+          .order("importance", { ascending: false });
+
+        if (error) {
+          console.error("Supabase error:", error);
+          setError(error.message);
+        } else {
+          console.log("AI Knowledge data:", data);
+          setItems(data || []);
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Failed to fetch knowledge. Check RLS policies.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
     fetchItems();
   }, []);
-
-  async function fetchItems() {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data, error } = await supabaseClient
-        .from("ai_knowledge")
-        .select("*")
-        .order("importance", { ascending: false });
-
-      if (error) {
-        setError(error.message);
-        console.error("Supabase error:", error);
-      } else {
-        setItems(data || []);
-      }
-    } catch (err) {
-      setError("Failed to fetch knowledge. Check RLS policies.");
-      console.error("Fetch error:", err);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function handleToggleActive(id: string, currentActive: boolean) {
     const newActive = !currentActive;
@@ -101,11 +101,18 @@ export default function AIKnowledgeManager() {
         />
       )}
 
-      {loading && <div className="text-center py-8 text-slate-500">Loading...</div>}
+      {loading && (
+        <div className="text-center py-8 text-slate-500">
+          <span className="animate-pulse">Loading...</span>
+        </div>
+      )}
 
       {!loading && error && (
         <div className="text-center py-12 border-2 border-dashed border-red-300 rounded-lg">
           <p className="text-red-600 font-medium">{error}</p>
+          <p className="text-sm text-slate-500 mt-2">
+            Check that the ai_knowledge table exists and RLS policies are set.
+          </p>
           <button
             onClick={fetchItems}
             className="mt-4 text-sm text-blue-600 hover:underline"
@@ -140,6 +147,11 @@ export default function AIKnowledgeManager() {
                   {!item.active && <span className="text-xs text-red-600 font-medium">Disabled</span>}
                 </div>
                 <p className="text-sm text-slate-600 mt-1 line-clamp-2">{item.content}</p>
+                {item.tags && Array.isArray(item.tags) && (
+                  <p className="text-xs text-slate-400 mt-1">
+                    Tags: {item.tags.join(", ")}
+                  </p>
+                )}
               </div>
               <div className="flex gap-2 flex-shrink-0">
                 <button

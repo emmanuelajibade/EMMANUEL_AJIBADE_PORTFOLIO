@@ -144,7 +144,7 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
 
     if (error) toast.error(error.message);
     else {
-      toast.success("Design saved!");
+      toast.success(design ? "Design updated! AI will now know about it." : "Design created! AI will now know about it.");
       onSaved();
     }
     setSaving(false);

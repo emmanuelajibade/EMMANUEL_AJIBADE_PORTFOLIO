@@ -95,7 +95,7 @@ export default function WritingForm({ post, onSaved, onCancel }: WritingFormProp
 
     if (error) toast.error(error.message);
     else {
-      toast.success("Post saved!");
+      toast.success(post ? "Post updated! AI will now know about it." : "Post created! AI will now know about it.");
       onSaved();
     }
   };
