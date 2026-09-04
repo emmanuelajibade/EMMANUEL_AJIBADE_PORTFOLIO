@@ -1,7 +1,6 @@
 import { getProjectBySlug, getPublishedProjects } from "@/lib/data";
 import Container from "@/components/layout/Container";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import MediaCarousel from "@/components/home/MediaCarousel";
@@ -41,6 +40,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const mediaItems = [
     ...(project.thumbnail?.url ? [{ url: project.thumbnail.url, type: "image" as const, altText: project.thumbnail.altText || project.title }] : []),
     ...(project.video?.url ? [{ url: project.video.url, type: "video" as const, altText: project.video.altText || project.title }] : []),
+    ...(project.screenshots || []).map((item) => ({
+      url: item.url,
+      type: "image" as const,
+      altText: item.altText || project.title,
+    })),
     ...(project.gallery || []).map((item) => ({
       url: item.url,
       type: item.type,

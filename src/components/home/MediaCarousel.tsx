@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Lightbox, { type LightboxImage } from "@/components/ui/Lightbox";
 
 interface MediaItem {
   url: string;
@@ -11,7 +12,11 @@ interface MediaItem {
 
 export default function MediaCarousel({ mediaItems, title }: { mediaItems: MediaItem[]; title: string }) {
   const [current, setCurrent] = useState(0);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const item = mediaItems[current];
+  const imageItems: LightboxImage[] = mediaItems
+    .filter((mediaItem) => mediaItem.type === "image")
+    .map((mediaItem) => ({ src: mediaItem.url, alt: mediaItem.altText || title }));
 
   if (!item) return null;
 
@@ -19,16 +24,28 @@ export default function MediaCarousel({ mediaItems, title }: { mediaItems: Media
     <div className="relative mb-8 overflow-hidden rounded-xl border border-border">
       <div className="relative aspect-video">
         {item.type === "video" ? (
-          <video src={item.url} controls className="w-full h-full object-contain bg-black" />
-        ) : (
-          <Image
+          <video
             src={item.url}
-            alt={item.altText || title}
-            fill
-            className="object-contain"
-            sizes="(max-width: 1024px) 100vw, 70vw"
-            unoptimized
+            controls
+            playsInline
+            className="h-full w-full object-contain bg-black"
           />
+        ) : (
+          <button
+            type="button"
+            className="absolute inset-0 cursor-zoom-in"
+            onClick={() => setLightboxIndex(imageItems.findIndex((image) => image.src === item.url))}
+            aria-label={`Open ${item.altText || title} in image viewer`}
+          >
+            <Image
+              src={item.url}
+              alt={item.altText || title}
+              fill
+              className="object-contain transition-transform duration-500 hover:scale-[1.02]"
+              sizes="(max-width: 1024px) 100vw, 70vw"
+              unoptimized
+            />
+          </button>
         )}
       </div>
 
@@ -59,6 +76,13 @@ export default function MediaCarousel({ mediaItems, title }: { mediaItems: Media
             ))}
           </div>
         </>
+      )}
+      {lightboxIndex !== null && imageItems.length > 0 && (
+        <Lightbox
+          images={imageItems}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
       )}
     </div>
   );

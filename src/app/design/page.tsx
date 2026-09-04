@@ -81,8 +81,11 @@ export default async function DesignPage() {
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        unoptimized
                       />
+                      <div className="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-slate-950/75 via-slate-950/10 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
+                        <span className="text-sm font-semibold text-white">View Design</span>
+                        <span aria-hidden="true" className="text-xl text-white transition-transform duration-300 group-hover:translate-x-1">→</span>
+                      </div>
                     </div>
                     <h3 className="text-xl font-bold text-slate-900">{work.title}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">{work.category}</p>

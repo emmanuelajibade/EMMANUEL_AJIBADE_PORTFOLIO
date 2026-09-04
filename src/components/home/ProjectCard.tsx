@@ -22,8 +22,11 @@ export default function ProjectCard({ project }: { project: Project }) {
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover transition-transform duration-500 group-hover:scale-110"
-          unoptimized
         />
+        <div className="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-slate-950/75 via-slate-950/10 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
+          <span className="text-sm font-semibold text-white">See Details</span>
+          <span aria-hidden="true" className="text-xl text-white transition-transform duration-300 group-hover:translate-x-1">→</span>
+        </div>
       </div>
 
       <h3 className="text-xl font-bold text-slate-900">{project.title}</h3>
@@ -59,7 +62,7 @@ export default function ProjectCard({ project }: { project: Project }) {
               : "Archived"}
         </span>
         <span className="inline-flex items-center gap-1 text-slate-700 transition-transform group-hover:translate-x-1">
-          View
+          See Details
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-4 w-4"

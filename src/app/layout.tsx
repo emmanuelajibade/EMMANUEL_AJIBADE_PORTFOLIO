@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import MotionProvider from "@/components/providers/MotionProvider";
 import PageTransition from "@/components/providers/PageTransition";
 import ScrollProgress from "@/components/layout/ScrollProgress";
+import BackToTop from "@/components/layout/BackToTop";
 import CursorGlow from "@/components/layout/CursorGlow";
 import PageBackground from "@/components/layout/PageBackground";
 import AIChatWidget from "@/components/ai/AIChatWidget";
@@ -65,6 +66,7 @@ export default async function RootLayout({
         <MotionProvider>
           <PageBackground />
           <ScrollProgress />
+          <BackToTop />
           <CursorGlow />
           <Navbar projects={projects} />
           <main className="relative z-10 min-h-screen pt-24">
