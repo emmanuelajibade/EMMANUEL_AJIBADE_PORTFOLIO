@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
 import WritingForm from "./WritingForm";
 import type { WritingPostRow } from "@/types/admin";
+import { adminMutation, adminQuery } from "@/lib/admin-api";
 
 export default function WritingManager() {
   const [posts, setPosts] = useState<WritingPostRow[]>([]);
@@ -18,35 +18,45 @@ export default function WritingManager() {
 
   async function fetchPosts() {
     setLoading(true);
-    const { data, error } = await supabaseClient
-      .from("writing_posts")
-      .select("*")
-      .order("date", { ascending: false });
-    if (error) toast.error(error.message);
-    else setPosts(data || []);
+    try {
+      setPosts(await adminQuery<WritingPostRow>("writing_posts"));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to load posts");
+    }
     setLoading(false);
   }
 
   async function handleToggleActive(id: string, currentActive: boolean) {
     const newActive = !currentActive;
-    const { error } = await supabaseClient
-      .from("writing_posts")
-      .update({ active: newActive })
-      .eq("id", id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation("update", "writing_posts", { active: newActive }, id);
       toast.success(newActive ? "Post enabled" : "Post disabled");
       fetchPosts();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update post");
     }
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this post?")) return;
-    const { error } = await supabaseClient.from("writing_posts").delete().eq("id", id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation("delete", "writing_posts", undefined, id);
       toast.success("Post deleted");
       fetchPosts();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to delete post");
+    }
+
+  }
+
+  async function handleToggleVisibility(id: string, currentVisibility: string) {
+    const newVisibility = currentVisibility === "published" ? "draft" : "published";
+    try {
+      await adminMutation("update", "writing_posts", { visibility: newVisibility }, id);
+      toast.success(newVisibility === "published" ? "Post published" : "Post moved to draft");
+      fetchPosts();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update post visibility");
     }
   }
 
@@ -147,6 +157,12 @@ export default function WritingManager() {
                   }`}
                 >
                   {post.active ? "Disable" : "Enable"}
+                </button>
+                <button
+                  onClick={() => handleToggleVisibility(post.id, post.visibility)}
+                  className="text-sm text-purple-600 hover:underline"
+                >
+                  {post.visibility === "published" ? "Make Draft" : "Publish"}
                 </button>
                 <button
                   onClick={() => handleDelete(post.id)}

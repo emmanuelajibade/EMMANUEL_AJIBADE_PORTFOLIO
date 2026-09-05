@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import type { Profile } from "@/types/content";
 
-export default function ContactForm({ profile }: { profile: any }) {
+export default function ContactForm({ profile }: { profile: Profile }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",

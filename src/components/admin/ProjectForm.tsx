@@ -2,10 +2,10 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
 import { uploadToCloudinary, uploadMultipleToCloudinary } from "@/lib/upload";
 import type { ProjectRow } from "@/types/admin";
+import { adminMutation } from "@/lib/admin-api";
 
 interface ProjectFormProps {
   project?: ProjectRow | null;
@@ -237,15 +237,12 @@ export default function ProjectForm({ project, onSaved, onCancel }: ProjectFormP
       active: formData.active,
     };
 
-    const { error } = project
-      ? await supabaseClient.from("projects").update(projectData).eq("id", project.id)
-      : await supabaseClient.from("projects").insert(projectData);
-
-    if (error) {
-      toast.error(error.message);
-    } else {
+    try {
+      await adminMutation(project ? "update" : "insert", "projects", projectData, project?.id);
       toast.success(project ? "Project updated! AI will now know about it." : "Project created! AI will now know about it.");
       onSaved();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to save project");
     }
     setSaving(false);
   };

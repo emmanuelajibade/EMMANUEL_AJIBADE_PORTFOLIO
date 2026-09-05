@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
 import ProjectForm from "./ProjectForm";
 import type { ProjectRow } from "@/types/admin";
+import { adminMutation, adminQuery } from "@/lib/admin-api";
 
 export default function ProjectsManager() {
   const [projects, setProjects] = useState<ProjectRow[]>([]);
@@ -17,15 +17,12 @@ export default function ProjectsManager() {
     let active = true;
 
     async function fetchProjects() {
-      const { data, error } = await supabaseClient
-        .from("projects")
-        .select("*")
-        .order("sort_order", { ascending: true });
-      if (error) {
-        toast.error(error.message);
-        setLoading(false);
-      } else if (active) {
-        setProjects(data as ProjectRow[]);
+      try {
+        const data = await adminQuery<ProjectRow>("projects");
+        if (active) setProjects(data);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Unable to load projects");
+      } finally {
         setLoading(false);
       }
     }
@@ -38,48 +35,44 @@ export default function ProjectsManager() {
   }, []);
 
   async function reloadProjects() {
-    const { data, error } = await supabaseClient
-      .from("projects")
-      .select("*")
-      .order("sort_order", { ascending: true });
-    if (error) toast.error(error.message);
-    else setProjects(data as ProjectRow[]);
+    try {
+      setProjects(await adminQuery<ProjectRow>("projects"));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to load projects");
+    }
   }
 
   async function handleToggleActive(id: string, currentActive: boolean) {
     const newActive = !currentActive;
-    const { error } = await supabaseClient
-      .from("projects")
-      .update({ active: newActive })
-      .eq("id", id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation("update", "projects", { active: newActive }, id);
       toast.success(newActive ? "Project enabled" : "Project disabled");
       reloadProjects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update project");
     }
   }
 
   async function handleToggleVisibility(id: string, currentVisibility: string) {
     const newVisibility = currentVisibility === "published" ? "draft" : "published";
-    const { error } = await supabaseClient
-      .from("projects")
-      .update({ visibility: newVisibility })
-      .eq("id", id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation("update", "projects", { visibility: newVisibility }, id);
       toast.success(newVisibility === "published" ? "Project published" : "Project moved to draft");
       reloadProjects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update project");
     }
   }
 
   async function handleDelete(id: string, title: string) {
     if (!confirm(`Are you sure you want to delete "${title}"? This cannot be undone.`)) return;
     setDeletingId(id);
-    const { error } = await supabaseClient.from("projects").delete().eq("id", id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation("delete", "projects", undefined, id);
       toast.success("Project deleted");
       reloadProjects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to delete project");
     }
     setDeletingId(null);
   }

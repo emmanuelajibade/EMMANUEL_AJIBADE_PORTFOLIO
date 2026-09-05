@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
 import AIKnowledgeForm from "./AIKnowledgeForm";
+import type { AIKnowledge } from "@/types/ai";
+import { adminMutation, adminQuery } from "@/lib/admin-api";
 
 export default function AIKnowledgeManager() {
-  const [items, setItems] = useState<any[]>([]);
-  const [editing, setEditing] = useState<any | null>(null);
+  const [items, setItems] = useState<AIKnowledge[]>([]);
+  const [editing, setEditing] = useState<AIKnowledge | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,19 +21,9 @@ export default function AIKnowledgeManager() {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabaseClient
-        .from("ai_knowledge")
-        .select("*")
-        .order("importance", { ascending: false });
-
-      if (error) {
-        setError(error.message);
-        console.error("Supabase error:", error);
-      } else {
-        setItems(data || []);
-      }
+      setItems(await adminQuery<AIKnowledge>("ai_knowledge"));
     } catch (err) {
-      setError("Failed to fetch knowledge. Check RLS policies.");
+      setError(err instanceof Error ? err.message : "Failed to fetch knowledge.");
       console.error("Fetch error:", err);
     } finally {
       setLoading(false);
@@ -41,24 +32,23 @@ export default function AIKnowledgeManager() {
 
   async function handleToggleActive(id: string, currentActive: boolean) {
     const newActive = !currentActive;
-    const { error } = await supabaseClient
-      .from("ai_knowledge")
-      .update({ active: newActive })
-      .eq("id", id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation("update", "ai_knowledge", { active: newActive }, id);
       toast.success(newActive ? "Enabled" : "Disabled");
       fetchItems();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update knowledge");
     }
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this knowledge?")) return;
-    const { error } = await supabaseClient.from("ai_knowledge").delete().eq("id", id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation("delete", "ai_knowledge", undefined, id);
       toast.success("Deleted");
       fetchItems();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to delete knowledge");
     }
   }
 

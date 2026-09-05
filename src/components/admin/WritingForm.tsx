@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
 import { uploadToCloudinary } from "@/lib/upload";
 import type { WritingPostRow } from "@/types/admin";
+import { adminMutation } from "@/lib/admin-api";
 
 interface WritingFormProps {
   post?: WritingPostRow | null;
@@ -89,14 +89,12 @@ export default function WritingForm({ post, onSaved, onCancel }: WritingFormProp
       active: formData.active,
     };
 
-    const { error } = post
-      ? await supabaseClient.from("writing_posts").update(postData).eq("id", post.id)
-      : await supabaseClient.from("writing_posts").insert(postData);
-
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation(post ? "update" : "insert", "writing_posts", postData, post?.id);
       toast.success(post ? "Post updated! AI will now know about it." : "Post created! AI will now know about it.");
       onSaved();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to save post");
     }
   };
 

@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
 import DesignForm from "./DesignForm";
 import type { DesignRow } from "@/types/admin";
+import { adminMutation, adminQuery } from "@/lib/admin-api";
 
 export default function DesignsManager() {
   const [designs, setDesigns] = useState<DesignRow[]>([]);
@@ -18,13 +18,8 @@ export default function DesignsManager() {
 
   async function fetchDesigns() {
     setLoading(true);
-    const { data, error } = await supabaseClient
-      .from("designs")
-      .select("*")
-      .order("sort_order", { ascending: true });
-    if (error) toast.error(error.message);
-    else {
-      const loadedDesigns: DesignRow[] = data || [];
+    try {
+      const loadedDesigns = await adminQuery<DesignRow>("designs");
       setDesigns(loadedDesigns);
       try {
         const draftKey = Object.keys(localStorage).find((key) =>
@@ -44,30 +39,32 @@ export default function DesignsManager() {
       } catch (storageError) {
         console.error("Unable to inspect saved design drafts:", storageError);
       }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to load designs");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function handleToggleActive(id: string, currentActive: boolean) {
     const newActive = !currentActive;
-    const { error } = await supabaseClient
-      .from("designs")
-      .update({ active: newActive })
-      .eq("id", id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation("update", "designs", { active: newActive }, id);
       toast.success(newActive ? "Design enabled" : "Design disabled");
       fetchDesigns();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update design");
     }
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this design?")) return;
-    const { error } = await supabaseClient.from("designs").delete().eq("id", id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation("delete", "designs", undefined, id);
       toast.success("Design deleted");
       fetchDesigns();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to delete design");
     }
   }
 

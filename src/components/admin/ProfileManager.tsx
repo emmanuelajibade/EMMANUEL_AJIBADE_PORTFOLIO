@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
 import type { SocialLink } from "@/types/content";
+import { adminMutation, adminQuery } from "@/lib/admin-api";
 
 interface ProfileData {
   name: string;
@@ -37,15 +37,9 @@ export default function ProfileManager() {
     let active = true;
 
     async function fetchProfile() {
-      const { data, error } = await supabaseClient
-        .from("profile")
-        .select("*")
-        .eq("id", "main")
-        .single();
-
-      if (error) {
-        toast.error(error.message);
-      } else if (active && data) {
+      try {
+        const [data] = await adminQuery<ProfileData>("profile");
+        if (active && data) {
         setProfile(data as ProfileData);
         setFormData({
           name: data.name || "",
@@ -59,6 +53,9 @@ export default function ProfileManager() {
           contact_email: data.contact_email || "",
           social_links: JSON.stringify(data.social_links || []),
         });
+        }
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Unable to load profile");
       }
     }
 
@@ -78,6 +75,27 @@ export default function ProfileManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let socialLinks: SocialLink[];
+    try {
+      const parsedLinks: unknown = JSON.parse(formData.social_links || "[]");
+      if (
+        !Array.isArray(parsedLinks) ||
+        parsedLinks.some(
+          (link) =>
+            typeof link !== "object" ||
+            link === null ||
+            typeof (link as { platform?: unknown }).platform !== "string" ||
+            typeof (link as { url?: unknown }).url !== "string"
+        )
+      ) {
+        throw new Error("Social links must be an array of objects with platform and url fields.");
+      }
+      socialLinks = parsedLinks as SocialLink[];
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Invalid social links JSON.");
+      return;
+    }
+
     const profileData = {
       name: formData.name,
       title: formData.title,
@@ -88,12 +106,15 @@ export default function ProfileManager() {
       phone: formData.phone,
       location: formData.location,
       contact_email: formData.contact_email,
-      social_links: JSON.parse(formData.social_links || "[]"),
+      social_links: socialLinks,
     };
 
-    const { error } = await supabaseClient.from("profile").update(profileData).eq("id", "main");
-    if (error) toast.error(error.message);
-    else toast.success("Profile updated!");
+    try {
+      await adminMutation("update", "profile", profileData, "main");
+      toast.success("Profile updated!");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update profile");
+    }
   };
 
   if (!profile) return <div className="glass-panel rounded-2xl p-6">Loading profile...</div>;

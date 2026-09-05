@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
+import type { AIKnowledge } from "@/types/ai";
+import { adminMutation } from "@/lib/admin-api";
 
 interface AIKnowledgeFormProps {
-  knowledge?: any;
+  knowledge?: AIKnowledge | null;
   onSaved: () => void;
   onCancel: () => void;
 }
@@ -48,15 +49,12 @@ export default function AIKnowledgeForm({ knowledge, onSaved, onCancel }: AIKnow
       active: formData.active,
     };
 
-    const { error } = knowledge
-      ? await supabaseClient.from("ai_knowledge").update(data).eq("id", knowledge.id)
-      : await supabaseClient.from("ai_knowledge").insert(data);
-
-    if (error) {
-      toast.error(error.message);
-    } else {
+    try {
+      await adminMutation(knowledge ? "update" : "insert", "ai_knowledge", data, knowledge?.id);
       toast.success("Knowledge saved!");
       onSaved();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to save knowledge");
     }
     setSaving(false);
   };

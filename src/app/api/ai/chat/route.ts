@@ -13,10 +13,29 @@ import { AIChatMessage } from "@/types/ai";
 
 export const revalidate = 0;
 
+function isChatMessage(value: unknown): value is AIChatMessage {
+  if (!value || typeof value !== "object") return false;
+  const message = value as { role?: unknown; content?: unknown };
+  return (
+    (message.role === "system" ||
+      message.role === "user" ||
+      message.role === "assistant") &&
+    typeof message.content === "string" &&
+    message.content.trim().length > 0
+  );
+}
+
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
-    if (!messages || !Array.isArray(messages)) {
+    const body: unknown = await req.json();
+    const messages =
+      typeof body === "object" &&
+      body !== null &&
+      "messages" in body &&
+      Array.isArray(body.messages)
+        ? body.messages
+        : null;
+    if (!messages || !messages.every(isChatMessage)) {
       return NextResponse.json({ error: "Invalid messages" }, { status: 400 });
     }
 
@@ -52,7 +71,7 @@ export async function POST(req: Request) {
 
     const modelMessages: AIChatMessage[] = [
       { role: "system", content: systemPrompt },
-      ...messages.filter(m => m.role !== "system"),
+      ...messages.filter((message) => message.role !== "system"),
     ];
 
     console.log("AI Chat - Sending to model");

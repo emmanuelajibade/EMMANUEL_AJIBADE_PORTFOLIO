@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { supabaseClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
 import { uploadToImageKit } from "@/lib/upload";
 import type { DesignRow } from "@/types/admin";
+import { adminMutation } from "@/lib/admin-api";
 
 interface DesignFormProps {
   design?: DesignRow | null;
@@ -203,15 +203,13 @@ export default function DesignForm({ design, onSaved, onCancel }: DesignFormProp
       gallery: formData.gallery,
     };
 
-    const { error } = design
-      ? await supabaseClient.from("designs").update(designData).eq("id", design.id)
-      : await supabaseClient.from("designs").insert(designData);
-
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await adminMutation(design ? "update" : "insert", "designs", designData, design?.id);
       clearDraft();
       toast.success(design ? "Design updated! AI will now know about it." : "Design created! AI will now know about it.");
       onSaved();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to save design");
     }
     setSaving(false);
   };
