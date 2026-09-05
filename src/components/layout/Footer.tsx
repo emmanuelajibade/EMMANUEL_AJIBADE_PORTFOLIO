@@ -1,7 +1,7 @@
 import Container from "@/components/layout/Container";
 import Link from "next/link";
 import type { Profile } from "@/types/content";
-import { publicTelegramUrl, publicWhatsappUrl } from "@/lib/profile-identity";
+import { publicTelegramUrl, publicWhatsappUrl, publicPhone } from "@/lib/profile-identity";
 
 export default function Footer({ profile }: { profile: Profile }) {
   return (
@@ -45,6 +45,11 @@ export default function Footer({ profile }: { profile: Profile }) {
                 <li>
                   <a href={publicTelegramUrl} className="text-sm text-slate-700 hover:text-slate-900 transition-colors" target="_blank" rel="noopener noreferrer">
                     Telegram
+                  </a>
+                </li>
+                <li>
+                  <a href={`tel:${publicPhone.replace(/\s/g, "")}`} className="text-sm text-slate-700 hover:text-slate-900 transition-colors">
+                    {publicPhone}
                   </a>
                 </li>
               </ul>

@@ -33,10 +33,13 @@ export async function POST(req: Request) {
       body !== null &&
       "messages" in body &&
       Array.isArray(body.messages)
-        ? body.messages
+        ? body.messages as unknown[]
         : null;
-    if (!messages || !messages.every(isChatMessage)) {
+    if (!messages || messages.length > 20 || !messages.every(isChatMessage)) {
       return NextResponse.json({ error: "Invalid messages" }, { status: 400 });
+    }
+    if (messages.some((message) => message.content.length > 4000)) {
+      return NextResponse.json({ error: "A message is too long." }, { status: 400 });
     }
 
     const lastUserMessage = [...messages].reverse().find(m => m.role === "user");
@@ -81,6 +84,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: aiResponse });
   } catch (err) {
     console.error("AI Chat - Route error:", err);
+    if (err instanceof Error && err.message.includes("timed out")) {
+      return NextResponse.json({ error: "The AI request timed out. Please try again." }, { status: 504 });
+    }
+    if (err instanceof Error && err.message.includes("429")) {
+      return NextResponse.json({ error: "The AI service is temporarily busy. Please try again shortly." }, { status: 429 });
+    }
     return NextResponse.json(
       { error: "AI service is having trouble right now. Please try again later." },
       { status: 500 }

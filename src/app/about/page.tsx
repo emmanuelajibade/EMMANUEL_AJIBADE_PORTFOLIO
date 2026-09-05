@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import {
   publicTelegramUrl,
   publicWhatsappUrl,
+  publicProfileAlt,
 } from "@/lib/profile-identity";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://emmanuel-ajibade-portfolio.vercel.app";
@@ -69,17 +70,17 @@ export default async function AboutPage() {
   const profileSchema = [personJsonLd, profilePageJsonLd];
 
   const profileMedia = [
-    { type: "image" as const, src: "/assets/img/emma1.png", alt: "Emmanuel portrait 1" },
-    { type: "image" as const, src: "/assets/img/emma10.png", alt: "Emmanuel portrait 10" },
-    { type: "image" as const, src: "/assets/img/emma11.png", alt: "Emmanuel portrait 11" },
-    { type: "image" as const, src: "/assets/img/emma2.png", alt: "Emmanuel portrait 2" },
-    { type: "image" as const, src: "/assets/img/emma3.png", alt: "Emmanuel portrait 3" },
-    { type: "image" as const, src: "/assets/img/emma4.png", alt: "Emmanuel portrait 4" },
-    { type: "image" as const, src: "/assets/img/emma5.jpg", alt: "Emmanuel portrait 5" },
-    { type: "image" as const, src: "/assets/img/emma6.png", alt: "Emmanuel portrait 6" },
-    { type: "image" as const, src: "/assets/img/emma7.png", alt: "Emmanuel portrait 7" },
-    { type: "image" as const, src: "/assets/img/emma8.png", alt: "Emmanuel portrait 8" },
-    { type: "image" as const, src: "/assets/img/emmanuel.png", alt: "Emmanuel portrait main" },
+    { type: "image" as const, src: "/assets/img/emma1.png", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emma10.png", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emma11.png", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emma2.png", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emma3.png", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emma4.png", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emma5.jpg", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emma6.png", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emma7.png", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emma8.png", alt: publicProfileAlt },
+    { type: "image" as const, src: "/assets/img/emmanuel.png", alt: publicProfileAlt },
     { type: "video" as const, src: "/assets/video/Code_displaying_on_futuristic_te…_202609021237.mp4" },
     { type: "video" as const, src: "/assets/video/Holographic_programming_tags_rot…_202609021244.mp4" },
     { type: "video" as const, src: "/assets/video/Technology_logos_morphing_202609021251.mp4" },

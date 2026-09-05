@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, type TargetAndTransition } from "motion/react";
 import Image from "next/image";
+import { publicProfileAlt } from "@/lib/profile-identity";
 
 interface MediaItem {
   type: "image" | "video";
@@ -78,7 +79,7 @@ export default function ProfileMediaOrb({ items }: { items: MediaItem[] }) {
           ) : (
             <Image
               src={item.src}
-              alt={item.alt || "Profile media"}
+              alt={item.alt || publicProfileAlt}
               fill
               className="object-cover object-center"
               unoptimized

@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { toast } from "react-hot-toast";
 
 interface Message {
   role: "user" | "assistant";
@@ -47,6 +46,7 @@ export default function AIChatWidget() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -80,24 +80,36 @@ export default function AIChatWidget() {
     setMessages(newMessages);
     setInput("");
     setLoading(true);
+    setError(null);
 
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 30000);
     try {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
+          messages: newMessages.slice(-20).map((m) => ({ role: m.role, content: m.content })),
         }),
+        signal: controller.signal,
       });
-      const data = await res.json();
+      const data: { message?: string; error?: string } = await res.json();
       if (res.ok) {
+        if (!data.message) throw new Error("The AI returned an empty response.");
         setMessages([...newMessages, { role: "assistant", content: data.message }]);
       } else {
-        toast.error(data.error || "Failed to get response");
+        setError(data.error || "Failed to get a response. Please try again.");
       }
-    } catch {
-      toast.error("Network error");
+    } catch (requestError) {
+      const message =
+        requestError instanceof DOMException && requestError.name === "AbortError"
+          ? "The AI request took too long. Please try again."
+          : requestError instanceof Error
+            ? requestError.message
+            : "Network error. Please try again.";
+      setError(message);
     } finally {
+      window.clearTimeout(timeout);
       setLoading(false);
     }
   };
@@ -217,6 +229,11 @@ export default function AIChatWidget() {
                     <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce delay-75" />
                     <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce delay-150" />
                   </div>
+                </div>
+              )}
+              {error && (
+                <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {error}
                 </div>
               )}
               <div ref={messagesEndRef} aria-live="polite" />

@@ -1,5 +1,6 @@
 import type { SocialLink } from "@/types/content";
 
+export const publicProfileAlt = "Emmanuel Ajibade, Tech Specialist and Software Developer";
 export const publicPhone = "+234 9067502619";
 export const publicFacebookUrl = "https://web.facebook.com/profile.php?id=61573178008542";
 export const publicGithubUrl = "https://emmanuelajibade.github.io";
